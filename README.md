@@ -8,7 +8,16 @@ This project is very much a work in progress. It will be done Soon<sup>TM</sup>.
 
 
 ### Compiling to Gecko
-Insert into [ASMWiiRd](https://code.google.com/archive/p/geckowii/downloads) or [CodeWrite](https://github.com/TheGag96/CodeWrite) and set the insertion address at 80230b8c (this is just after IPC functions and Wiimote bluetooth have been enabled)
+Insert into [ASMWiiRd](https://code.google.com/archive/p/geckowii/downloads) or [CodeWrite](https://github.com/TheGag96/CodeWrite) to obtain the generated Gecko code
+
+**NOTE:**
+
+Confirm the following when compiling:
+- The insertion address is set to an instruction where the function [IPCCltInit](https://github.com/devkitPro/libogc/blob/master/libogc/ipc.c#L804) has already been called
+- The instruction replaced by a branch to this code is restored at the end of the PPC code
+
+For an example of how to handle these two points, please refer to [the last few lines](main.s#L113) of the main source file
+
 
 ### TODO
 Right now the code only obtains a file descriptor via [IOS_Open](https://github.com/devkitPro/libogc/blob/master/libogc/ipc.c#L843) and subscribes to USB device changes on the file descriptor via [IOS_IoctlAsync](https://github.com/devkitPro/libogc/blob/master/libogc/ipc.c#L1078). TODO items include:
