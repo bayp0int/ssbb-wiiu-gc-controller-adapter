@@ -2,7 +2,7 @@
 
 PPC code to inject functionality into SSBB for enabling the WiiU GameCube Controller Adapter via USB
 
-This project is very much a work in progress. It will be done Soon<sup>TM</sup>. Any feedback or insight is encouraged!
+This project is very much a work in progress. Any feedback or insight is encouraged!
 
 <img src="https://wiki.dolphin-emu.org/images/4/4c/Wiiugcpadadapter.jpg" alt="WiiU GameCube Controller Adapter" width="128" />
 
@@ -27,3 +27,5 @@ Right now the code only obtains a file descriptor via [IOS_Open](https://github.
 - Determine how to recieve controller inputs
 - Determine how to map controller inputs to existing game functionality
 - Determine how to optimally punish all recovery options as Falco
+
+Soon<sup>TM</sup>
