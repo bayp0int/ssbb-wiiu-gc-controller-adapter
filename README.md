@@ -1,6 +1,11 @@
-# ssbb-wiiu-gc-controller-adapter
-<img src="https://wiki.dolphin-emu.org/images/4/4c/Wiiugcpadadapter.jpg" alt="WiiU GameCube Controller Adapter" style="width: 50px; height: 50px; float: right;"/>
+<h1>ssbb-wiiu-gc-controller-adapter</h1>
+
 PPC code to inject functionality into SSBB for enabling the WiiU GameCube Controller Adapter via USB
+
+This project is very much a work in progress. It will be done Soon<sup>TM</sup>. Any feedback or insight is encouraged!
+
+<img src="https://wiki.dolphin-emu.org/images/4/4c/Wiiugcpadadapter.jpg" alt="WiiU GameCube Controller Adapter" width="128" />
+
 
 ### Compiling to Gecko
 Insert into [ASMWiiRd](https://code.google.com/archive/p/geckowii/downloads) or [CodeWrite](https://github.com/TheGag96/CodeWrite) and set the insertion address at 80230b8c (this is just after IPC functions and Wiimote bluetooth have been enabled)
