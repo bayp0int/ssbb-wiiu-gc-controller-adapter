@@ -1,10 +1,12 @@
-# Skip functions that are declared first in this entire code block
+# Skip functions that are declared first in the code block
 gc_adapter_initialize:
 b      gc_adapter_start
 
 
 # FUNCTION - bl_generator
-# Desc: Converts value at LR + offset to bl instruction pointing to specified memory location
+# Desc: Converts value at LR + offset to bl instruction pointing to specified
+#       memory location
+# Parameters:
 # r3: Offset from LR to memory address that will be converted to bl instruction
 # r4: Memory address that the bl instruction will branch to
 bl_generator:
@@ -17,6 +19,28 @@ addi   r29, r29, 0x0001
 stw    r29, 0(r3)
 blr
 
+# FUNCTION - get_current_address
+# Desc: Gets current address
+# Returns:
+# r3: Current LR
+get_current_address:
+mflr   r3
+blr
+
+# FUNCTION - callback_GetDeviceChange
+# Desc: Called after USB devices change from IOS_IoctlAsync with ioctl request
+#       type GetDeviceChange. The main purpose of this function will be to setup
+#       IOS_IoctlAsync calls for interrupt messages gotten from the GameCube
+#       (GC) adapter. Starts by loading size of userdata buffer into r4
+# Parameters:
+# r3: The result of the IPC function
+# r4: Pointer to userdata buffer (device information such as device ID)
+callback_GetDeviceChange:
+lwz    r4, 0(r4)
+cmpwi  r4, 0xFFFFFFFF
+beq    0x0008
+nop
+blr
 
 
 # Setup bl to IOS_Open (IOS_Open located at 802123a8) using bl_generator
@@ -32,7 +56,8 @@ bl     bl_generator
 lis    r4, 0x2f64
 addi   r4, r4,0x6576
 
-# Load memory address 0x935e2e18 into r3 (pointer to where to store string "/dev/usb/hid")
+# Load memory address 0x935e2e18 into r3 (pointer to where to store string
+# "/dev/usb/hid")
 lis    r3, 0x935e
 addi   r3, r3,0x2e18
 
@@ -65,23 +90,27 @@ li     r4, 0
 # Will be replaced by bl -> IOS_Open
 nop
 
-# Load r7 with pointer to address that will be used as main memory for IOS_IoctlAsync
+# Load r7 with pointer to address that will be used as main memory for
+# IOS_IoctlAsync
 lis    r7, 0x8130
 
-# Store fd (currently in r3) at memory address for future calls to IOS_IoctlAsync
-stw    r3, -0x0024(r7)
+# Store fd (currently in r3) at memory address for future calls to
+# IOS_IoctlAsync
+stw    r3, -0x0004(r7)
 
 
 
 ## Call IOS_IoctlAsync with message GetDeviceChange to listen for devices
 
-# Setup bl to IOS_IoctlAsync (IOS_IoctlAsync located at 80212c08) using bl_generator
-li     r3, 0x0028
+# Setup bl to IOS_IoctlAsync (IOS_IoctlAsync located at 80212c08) using
+# bl_generator
+li     r3, 0x0020
 lis    r4, 0x8021
 addi   r4, r4,0x2c08
 bl     bl_generator
 
-# Load r4 with 0 (0 is ioctl message GetDeviceChange for listening to device changes)
+# Load r4 with 0 (0 is ioctl message GetDeviceChange for listening to device
+# changes)
 li     r4, 0
 
 # Load r5 with pointer to buffer_in (Will be NULL)
@@ -93,17 +122,16 @@ li     r6, 0
 # Load r8 with length of buffer_io (0x600 constant)
 li     r8, 0x0600
 
-# Load r9 with pointer to callback function
-lis    r9, 0x4e80
-addi   r9, r9,0x0020
-stw    r9, -0x0020(r7)
-subi   r9, r7, 0x0020
+# Load r9 with pointer to callback function (defined above)
+bl     get_current_address
+# r3 holds address at next instruction, subtract offset to callback above
+subi   r9, r3,0x0084
 
 # Load r10 with pointer to buffer_io (Is random memory address for now)
 mr     r10, r7
 
-# Load r3 with fd (previously stored above)
-lwz    r3, -0x0024(r7)
+# Load r3 with fd (previously stored using r7 above)
+lwz    r3, -0x0004(r7)
 
 # Will be replaced by bl -> IOS_IoctlAsync
 nop
