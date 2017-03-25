@@ -65,15 +65,18 @@ li     r4, 0
 # Will be replaced by bl -> IOS_Open
 nop
 
-# Save fd in r3 to r31 to for instructions requiring r3 ahead
-mr     r31, r3
+# Load r7 with pointer to address that will be used as main memory for IOS_IoctlAsync
+lis    r7, 0x8130
+
+# Store fd (currently in r3) at memory address for future calls to IOS_IoctlAsync
+stw    r3, -0x0024(r7)
 
 
 
 ## Call IOS_IoctlAsync with message GetDeviceChange to listen for devices
 
 # Setup bl to IOS_IoctlAsync (IOS_IoctlAsync located at 80212c08) using bl_generator
-li     r3, 0x0030
+li     r3, 0x0028
 lis    r4, 0x8021
 addi   r4, r4,0x2c08
 bl     bl_generator
@@ -87,10 +90,6 @@ li     r5, 0
 # Load r6 with length of buffer_in (0)
 li     r6, 0
 
-# Load r7 with pointer to buffer_io (Is random memory address for now)
-lis    r7, 0x8000
-addi   r7, r7,0x2a00
-
 # Load r8 with length of buffer_io (0x600 constant)
 li     r8, 0x0600
 
@@ -103,8 +102,8 @@ subi   r9, r7, 0x0020
 # Load r10 with pointer to buffer_io (Is random memory address for now)
 mr     r10, r7
 
-# Load r3 with fd that was temporarily stored in r31
-mr     r3, r31
+# Load r3 with fd (previously stored above)
+lwz    r3, -0x0024(r7)
 
 # Will be replaced by bl -> IOS_IoctlAsync
 nop
